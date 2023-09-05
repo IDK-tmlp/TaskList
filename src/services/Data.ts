@@ -2,14 +2,14 @@ import { PostTask, Task, UpdatedTask } from "../interfaces/taskInterface";
 
 export default class Data {
   static url = "http://localhost:3001/taskList";
-  static async loadData() {
+  static async loadData():Promise<Task[]> {
     return fetch(this.url)
       .then((response) => {
         //console.log('Response : ', response);
         return response.json();
       })
       .then((data) => {
-        return data;
+        return data.sort((a:Task, b:Task) => a.order - b.order);
       })
       .catch((error) => {
         console.log("Error dans loadData : ", error);

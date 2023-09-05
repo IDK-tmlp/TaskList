@@ -3,6 +3,7 @@ import './App.css';
 import TaskContainer from './components/taskContainer';
 import Data from './services/Data';
 import { PostTask, Task } from './interfaces/taskInterface';
+import { switchTask } from './utils/utils';
 
 function App() {
 	const [taskList, setTaskList] = useState<Task[]>([]);
@@ -43,19 +44,17 @@ function App() {
 		}
 	}
 	const onTaskUp = (task:Task) => {
-		const copyTaskList:Task[] = [...taskList].sort((a, b) => a.order - b.order);
-		copyTaskList[copyTaskList.indexOf(task)-1].order ++;
-		copyTaskList[copyTaskList.indexOf(task)].order--;
+		const copyTaskList:Task[] = switchTask(task, taskList, true)
 		setTaskList(taskList => copyTaskList);
 		const t = copyTaskList[copyTaskList.indexOf(task)-1]
-		Data.updateTask(t.id, {order : t.order})
+		Data.updateTask(t.id, {order : t.order})	
 		const t2 = copyTaskList[copyTaskList.indexOf(task)]
 		Data.updateTask(t.id, {order : t.order})
 	}
+
+
 	const onTaskDown = (task:Task) => {
-		const copyTaskList:Task[] = [...taskList].sort((a, b) => a.order - b.order);
-		copyTaskList[copyTaskList.indexOf(task)+1].order--;
-		copyTaskList[copyTaskList.indexOf(task)].order++;
+		const copyTaskList:Task[] = switchTask(task, taskList, false)
 		setTaskList(taskList => copyTaskList);
 		const t = copyTaskList[copyTaskList.indexOf(task)+1]
 		Data.updateTask(t.id, {order : t.order})
@@ -73,7 +72,7 @@ function App() {
 			<hr />
 			<h1 className='text-center m-4'>Listes de taches</h1>
 			<section style={{width:"80%"}} className=' d-flex gap-2 flex-column m-auto'>
-				{taskList.sort((a, b) => a.order - b.order).map((task:Task) =>  <TaskContainer key={task.id} task={task} onTaskDone={() => handleTaskDone(task.id)} onTaskDelete={() => handleTaskDelete(task.id)} onTaskUp={()=>onTaskUp(task)} onTaskDown={()=>onTaskDown(task)}/>)}
+				{taskList.map((task:Task) =>  <TaskContainer key={task.id} task={task} onTaskDone={() => handleTaskDone(task.id)} onTaskDelete={() => handleTaskDelete(task.id)} onTaskUp={()=>onTaskUp(task)} onTaskDown={()=>onTaskDown(task)}/>)}
 			</section>
 		</div>
 	);
